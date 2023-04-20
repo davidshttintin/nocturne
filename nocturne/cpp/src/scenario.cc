@@ -382,6 +382,26 @@ std::vector<const TrafficLight*> Scenario::VisibleTrafficLights(
   return ret;
 }
 
+NdArray<float> Scenario::ObjectGTState(const Object& src) const {
+  NdArray<float> state({kObjectGTStateSize}, 0.0f);
+
+  float* state_data = state.DataPtr();
+
+  state_data[0] = src.position().x();
+  state_data[1] = src.position().y();
+  state_data[2] = src.heading();
+  state_data[3] = src.speed();
+  state_data[4] = src.length();
+  state_data[5] = src.width();
+  state_data[6] = 1.0f; // hardcoded to be valid because that's what nocturne did
+  const int64_t obj_type = static_cast<int64_t>(src.Type());
+
+  // One-hot vector for object_type, assume feature is initially 0.
+  state_data[7 + obj_type] = 1.0f;
+
+  return state;
+}
+
 NdArray<float> Scenario::EgoState(const Object& src) const {
   NdArray<float> state({kEgoFeatureSize}, 0.0f);
 
@@ -889,6 +909,11 @@ void Scenario::LoadObjects(const json& objects_json) {
   for (const auto& obj : objects_json) {
     const ObjectType object_type = ParseObjectType(obj["type"]);
 
+    bool is_sdc = false;
+    if (obj.contains("is_sdc")) {
+      is_sdc = obj["is_sdc"];
+    }
+
     // TODO(ev) current_time_ should be passed in rather than defined here.
     const geometry::Vector2D position(obj["position"][current_time_]["x"],
                                       obj["position"][current_time_]["y"]);
@@ -959,6 +984,9 @@ void Scenario::LoadObjects(const json& objects_json) {
       objects_.push_back(vehicle);
       if (is_moving) {
         moving_objects_.push_back(vehicle);
+      }
+      if (is_sdc) {
+        sdc_ = vehicle;
       }
     } else if (allow_non_vehicles_) {
       if (object_type == ObjectType::kPedestrian) {

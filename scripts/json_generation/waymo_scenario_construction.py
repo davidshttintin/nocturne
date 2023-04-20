@@ -92,7 +92,7 @@ def _init_tl_object(track):
     return returned_dict
 
 
-def _init_object(track: scenario_pb2.Track) -> Optional[Dict[str, Any]]:
+def _init_object(track: scenario_pb2.Track, is_sdc: bool = False) -> Optional[Dict[str, Any]]:
     """Construct a dict representing the state of the object (vehicle, cyclist, pedestrian).
 
     Args:
@@ -109,6 +109,7 @@ def _init_object(track: scenario_pb2.Track) -> Optional[Dict[str, Any]]:
 
     obj = _parse_object_state(track.states, track.states[final_valid_index])
     obj["type"] = _WAYMO_OBJECT_STR[track.object_type]
+    obj["is_sdc"] = is_sdc
     return obj
 
 
@@ -185,8 +186,12 @@ def waymo_to_scenario(scenario_path: str,
 
     # Construct the object states
     objects = []
-    for track in protobuf.tracks:
-        obj = _init_object(track)
+    sdc_index = -1
+    for track_idx, track in enumerate(protobuf.tracks):
+        is_sdc = track_idx == protobuf.sdc_track_index
+        obj = _init_object(track, is_sdc=is_sdc)
+        if is_sdc:
+            sdc_index = len(objects)
         if obj is not None:
             objects.append(obj)
 
@@ -201,7 +206,8 @@ def waymo_to_scenario(scenario_path: str,
         "name": scenario_path.split('/')[-1],
         "objects": objects,
         "roads": roads,
-        "tl_states": tl_dict
+        "tl_states": tl_dict,
+        "sdc_index": sdc_index,
     }
     with open(scenario_path, "w") as f:
         json.dump(scenario, f)

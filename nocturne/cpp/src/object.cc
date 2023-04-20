@@ -121,4 +121,17 @@ void Object::KinematicBicycleStep(float dt) {
   speed_ = ClipSpeed(speed_ + acceleration_ * dt);
 }
 
+// Extended Dubins Car Model
+// Appendix B of https://arxiv.org/pdf/2001.03093.pdf 
+void Object::ExtendedDubinsStep(float dt) {
+  const float v =
+      ClipSpeed(speed_ + 0.5f * acceleration_ * dt);  // Average speed
+  const float theta =
+      geometry::utils::AngleAdd(heading_, 0.5f * steering_rate_ * dt);  // Average heading
+  const geometry::Vector2D d = geometry::PolarToVector2D(v, theta);
+  position_ += d * dt;
+  heading_ = geometry::utils::AngleAdd(heading_, steering_rate_ * dt);
+  speed_ = ClipSpeed(speed_ + acceleration_ * dt);
+}
+
 }  // namespace nocturne

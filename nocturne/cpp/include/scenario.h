@@ -46,6 +46,11 @@ constexpr int64_t kMaxVisibleRoadPoints = 300;
 constexpr int64_t kMaxVisibleTrafficLights = 20;
 constexpr int64_t kMaxVisibleStopSigns = 4;
 
+// Object GT States (in the world frame) are:
+// [ position_x, position_y, heading, speed, length, width,
+//   valid, object_type (one_hot of 5) ]
+constexpr int64_t kObjectGTStateSize = 12;
+
 // Object features are:
 // [ valid, distance, azimuth, length, witdh, relative_object_heading,
 //   relative_velocity_heading, relative_velocity_speed,
@@ -232,9 +237,15 @@ class Scenario : public sf::Drawable {
     return moving_objects_;
   }
 
+  std::shared_ptr<Vehicle> sdc() const {
+    return sdc_;
+  }
+
   const std::vector<std::shared_ptr<RoadLine>>& road_lines() const {
     return road_lines_;
   }
+
+  NdArray<float> ObjectGTState(const Object& src) const;
 
   NdArray<float> EgoState(const Object& src) const;
 
@@ -254,6 +265,7 @@ class Scenario : public sf::Drawable {
     return max_visible_traffic_lights_;
   }
   int64_t getMaxNumVisibleStopSigns() const { return max_visible_stop_signs_; }
+  int64_t getObjectGTStateSize() const { return kObjectGTStateSize; }
   int64_t getObjectFeatureSize() const { return kObjectFeatureSize; }
   int64_t getRoadPointFeatureSize() const { return kRoadPointFeatureSize; }
   int64_t getTrafficLightFeatureSize() const {
@@ -336,6 +348,8 @@ class Scenario : public sf::Drawable {
   // Rrack the object that moved, useful for figuring out which agents should
   // actually be controlled
   std::vector<std::shared_ptr<Object>> moving_objects_;
+  // Denote the data collection vehicle in waymo dataset
+  std::shared_ptr<Vehicle> sdc_;
 
   std::vector<std::shared_ptr<geometry::LineSegment>> line_segments_;
   std::vector<std::shared_ptr<RoadLine>> road_lines_;

@@ -40,9 +40,14 @@ void DefineScenario(py::module& m) {
       .def("objects", &Scenario::objects, py::return_value_policy::reference)
       .def("moving_objects", &Scenario::moving_objects,
            py::return_value_policy::reference)
+      .def("sdc", &Scenario::sdc)
       .def("remove_object", &Scenario::RemoveObject)
       .def("road_lines", &Scenario::road_lines)
 
+      .def("obj_gt_state",
+           [](const Scenario& scenario, const Object& src) {
+             return utils::AsNumpyArray(scenario.ObjectGTState(src));
+           })
       .def("ego_state",
            [](const Scenario& scenario, const Object& src) {
              return utils::AsNumpyArray(scenario.EgoState(src));
@@ -69,6 +74,7 @@ void DefineScenario(py::module& m) {
       .def("expert_speed", &Scenario::ExpertSpeed)
       .def("expert_velocity", &Scenario::ExpertVelocity)
       .def("expert_action", &Scenario::ExpertAction)
+      .def("expert_position", &Scenario::ExpertPosition)
       .def("expert_pos_shift", &Scenario::ExpertPosShift)
       .def("expert_heading_shift", &Scenario::ExpertHeadingShift)
 

@@ -10,6 +10,7 @@ namespace py = pybind11;
 
 namespace nocturne {
 
+void DefineActionDubins(py::module& m);
 void DefineAction(py::module& m);
 void DefineObject(py::module& m);
 void DefineRoadLine(py::module& m);

@@ -30,6 +30,7 @@ std::vector<std::string> GetFontPaths() {
   const std::string username = std::getenv("USER");
   return {"/usr/share/fonts", "/usr/local/share/fonts",
           "/home/" + username + "/.fonts/",
+          "/home/" + username + "/.local/share/fonts",
           "/private/home/" + username + "/.fonts/"};
 }
 

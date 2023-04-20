@@ -14,7 +14,10 @@ from pyvirtualdisplay import Display
 VERSION_NUMBER = 2
 
 PROJECT_PATH = Path.resolve(Path(__file__).parent.parent)
-DATA_FOLDER = '/checkpoint/eugenevinitsky/waymo_open/motion_v1p1/uncompressed/scenario/'
+#DATA_FOLDER = '/checkpoint/eugenevinitsky/waymo_open/motion_v1p1/uncompressed/scenario/'
+#DATA_FOLDER = '/home/daly/rcps_planning_ws/nocturne/waymo_mini/'
+#DATA_FOLDER = '/home/dalyshen/waymo_motion_dataset'
+DATA_FOLDER = '/home/dalyshen/ConformalMultiAgent/data/waymo_validation'
 TRAIN_DATA_PATH = os.path.join(DATA_FOLDER, 'training')
 VALID_DATA_PATH = os.path.join(DATA_FOLDER, 'validation')
 TEST_DATA_PATH = os.path.join(DATA_FOLDER, 'testing')

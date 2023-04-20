@@ -19,6 +19,8 @@ void Simulation::Render() {
         sf::VideoMode(kWinWidth, kWinHeight), "Nocturne", sf::Style::Default,
         settings);
     font_ = utils::LoadFont("Arial.ttf");
+    // uncomment this in the event that Ubuntu fails to find Arial
+    // font_ = utils::LoadFont("/truetype/ubuntu/Ubuntu-R.ttf");
   }
   if (render_window_->isOpen()) {
     // parse events

@@ -12,6 +12,7 @@
 #include <string>
 
 #include "action.h"
+#include "action_dubins.h"
 #include "geometry/aabb.h"
 #include "geometry/aabb_interface.h"
 #include "geometry/polygon.h"
@@ -120,6 +121,11 @@ class Object : public ObjectBase {
     expert_control_ = expert_control;
   }
 
+  bool extdubins_dynamics() const { return extdubins_dynamics_; }
+  void set_extdubins_dynamics(bool extdubins_dynamics) {
+    extdubins_dynamics_ = extdubins_dynamics;
+  }
+
   bool highlight() const { return highlight_; }
   void set_highlight(bool highlight) { highlight_ = highlight; }
 
@@ -164,13 +170,26 @@ class Object : public ObjectBase {
     }
   }
 
+  void ApplyActionDubins(const ActionDubins& action_dubins) {
+    if (action_dubins.acceleration().has_value()) {
+      acceleration_ = action_dubins.acceleration().value();
+    }
+    if (action_dubins.steering_rate().has_value()) {
+      steering_rate_ = action_dubins.steering_rate().value();
+    }
+  }
+
   void SetActionFromKeyboard();
 
   virtual void Step(float dt) {
     if (manual_control_) {
       SetActionFromKeyboard();
     }
-    KinematicBicycleStep(dt);
+    if (extdubins_dynamics_) {
+      ExtendedDubinsStep(dt);
+    } else {
+      KinematicBicycleStep(dt);
+    }
   }
 
  protected:
@@ -179,6 +198,8 @@ class Object : public ObjectBase {
   void InitRandomColor();
 
   void KinematicBicycleStep(float dt);
+
+  void ExtendedDubinsStep(float dt);
 
   float ClipSpeed(float speed) const {
     return std::max(std::min(speed, max_speed_), -max_speed_);
@@ -199,8 +220,9 @@ class Object : public ObjectBase {
   float target_speed_ = 0.0f;
 
   float acceleration_ = 0.0f;
-  float steering_ = 0.0f;
   float head_angle_ = 0.0f;
+  float steering_ = 0.0f; // only used in Bycicle
+  float steering_rate_ = 0.0f; // only used in Extended Dubins
 
   // used to color the object in videos if set to True
   bool highlight_ = false;
@@ -209,6 +231,9 @@ class Object : public ObjectBase {
   bool manual_control_ = false;
   // If true the object is placed along positions in its recorded trajectory.
   bool expert_control_ = false;
+
+  // If true the object follows Extended Dubins Car dynamics instead of Bicycle Dynamics
+  bool extdubins_dynamics_ = false;
 
   sf::Color color_;
   std::unique_ptr<sf::RenderTexture> cone_texture_ = nullptr;

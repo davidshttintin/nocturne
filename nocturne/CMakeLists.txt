@@ -34,6 +34,7 @@ pybind11_add_module(
   ${CMAKE_CURRENT_SOURCE_DIR}/pybind11/src/vehicle.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/pybind11/src/pedestrian.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/pybind11/src/cyclist.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/pybind11/src/action_dubins.cc
 )
 target_include_directories(
   nocturne_cpp

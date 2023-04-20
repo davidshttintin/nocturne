@@ -57,6 +57,8 @@ void DefineObject(py::module& m) {
                     &Object::set_manual_control)
       .def_property("expert_control", &Object::expert_control,
                     &Object::set_expert_control)
+      .def_property("extdubins_dynamics", &Object::extdubins_dynamics,
+                    &Object::set_extdubins_dynamics)
       .def_property("highlight", &Object::highlight, &Object::set_highlight)
       .def_property_readonly("collided", &Object::collided)
       .def_property_readonly("collision_type", &Object::collision_type)
@@ -68,6 +70,7 @@ void DefineObject(py::module& m) {
       .def("set_target_position",
            py::overload_cast<float, float>(&Object::set_target_position))
       .def("apply_action", &Object::ApplyAction)
+      .def("apply_action_dubins", &Object::ApplyActionDubins)
       .def("_scale_shape", &Object::ScaleShape, py::arg("length_scale") = 1.0,
            py::arg("width_scale") = 1.0)
 
